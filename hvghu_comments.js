@@ -1,7 +1,7 @@
-var extensionLoaded = false;
+var extension_loaded = false;
 document.addEventListener('DOMContentLoaded', function () {
-    if (extensionLoaded) return;
-    else extensionLoaded = true;
+    if (extension_loaded) return;
+    else extension_loaded = true;
 
     function log(msg, ret) {
         var tag = "[" + chrome.runtime.getManifest().short_name + "]";
@@ -10,13 +10,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function init() {
-        initDisqusHtml();
-        initCommentCounter();
-        initDisqusJs();
+        addCommentIconHtml();
+        addDisqusHtml();
+        addDisqusJs();
         log("enabled comments");
     }
 
-    function initCommentCounter() {
+    function addCommentIconHtml() {
         var el = document.querySelector("div.share.others");
         el.insertAdjacentHTML("afterbegin", `
             <div class="item comment">
@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>`);
     }
 
-    function initDisqusHtml() {
-        var pe = document.querySelector("div.random-article-page-box");
-        pe.insertAdjacentHTML("beforebegin", `
+    function addDisqusHtml() {
+        var el = document.querySelector("div.random-article-page-box");
+        el.insertAdjacentHTML("beforebegin", `
             <div class="site-disqus-holder hvgcomments" id="article-comments" data-scroll-event-name="ScrollToArticleDisqus">
                 <div class="heading-with_line"><span>Hozzászólások</span></div>
                 <div class="site-disqus">
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>`);
     }
 
-    function initDisqusJs() {
+    function addDisqusJs() {
         var script = document.createElement('script');
         var l = location.protocol + "//" + location.host + location.pathname;
         script.textContent = `
@@ -51,13 +51,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.page.api_key = 'tWtbL1OV8by298LctEFv9ccPxqJ7DUCg5sS064ItLBAWl11EdFJYcHqIgiZCVvS1';
                     this.page.remote_auth_s3 = '{}';
                 };
-
                 (function () {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
                     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 
-                    // Comment számláláshoz async JS behívása
                     var dsqCommentCount = document.createElement('script'); dsqCommentCount.id = 'dsq-count-scr'; dsqCommentCount.type = 'text/javascript'; dsqCommentCount.async = true;
                     dsqCommentCount.src = '//' + disqus_shortname + '.disqus.com/count.js';
                     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsqCommentCount);
@@ -68,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var af = document.querySelector("div.article-main");
     if (null === af) {
-        // only run on article pages
         log("no article found, doing nothing");
     } else {
         if (null !== document.getElementById("disqus_thread")) {
